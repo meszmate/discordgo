@@ -4,4 +4,4 @@
 
 <img align="right" alt="DiscordGo logo" src="https://pkg.go.dev/badge/github.com/bwmarrin/discordgo/docs/img/discordgo.svg" width="400">
 
-This is a specialised library for [Matebot](https://matebot.xyz/)
+This is a specialised library for [Matebot](https://matebot.xyz/).
