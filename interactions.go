@@ -492,57 +492,6 @@ func (o ApplicationCommandInteractionDataOption) BoolValue() bool {
 	return o.Value.(bool)
 }
 
-// ChannelValue is a utility function for casting option value to channel object.
-// s : Session object, if not nil, function additionally fetches all channel's data
-func (o ApplicationCommandInteractionDataOption) ChannelValue(s *Session) *Channel {
-	if o.Type != ApplicationCommandOptionChannel {
-		panic("ChannelValue called on data option of type " + o.Type.String())
-	}
-	chanID := o.Value.(string)
-
-	if s == nil {
-		return &Channel{ID: chanID}
-	}
-
-	ch, err := s.State.Channel(chanID)
-	if err != nil {
-		ch, err = s.Channel(chanID)
-		if err != nil {
-			return &Channel{ID: chanID}
-		}
-	}
-
-	return ch
-}
-
-// RoleValue is a utility function for casting option value to role object.
-// s : Session object, if not nil, function additionally fetches all role's data
-func (o ApplicationCommandInteractionDataOption) RoleValue(s *Session, gID string) *Role {
-	if o.Type != ApplicationCommandOptionRole && o.Type != ApplicationCommandOptionMentionable {
-		panic("RoleValue called on data option of type " + o.Type.String())
-	}
-	roleID := o.Value.(string)
-
-	if s == nil || gID == "" {
-		return &Role{ID: roleID}
-	}
-
-	r, err := s.State.Role(gID, roleID)
-	if err != nil {
-		roles, err := s.GuildRoles(gID)
-		if err == nil {
-			for _, r = range roles {
-				if r.ID == roleID {
-					return r
-				}
-			}
-		}
-		return &Role{ID: roleID}
-	}
-
-	return r
-}
-
 // UserValue is a utility function for casting option value to user object.
 // s : Session object, if not nil, function additionally fetches all user's data
 func (o ApplicationCommandInteractionDataOption) UserValue(s *Session) *User {

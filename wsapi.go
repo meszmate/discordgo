@@ -153,20 +153,6 @@ func (s *Session) Open() error {
 
 	}
 
-	// A basic state is a hard requirement for Voice.
-	// We create it here so the below READY/RESUMED packet can populate
-	// the state :)
-	// XXX: Move to New() func?
-	if s.State == nil {
-		state := NewState()
-		state.TrackChannels = false
-		state.TrackEmojis = false
-		state.TrackMembers = false
-		state.TrackRoles = false
-		state.TrackVoice = false
-		s.State = state
-	}
-
 	// Now Discord should send us a READY or RESUMED packet.
 	mt, m, err = s.wsConn.ReadMessage()
 	if err != nil {
@@ -697,10 +683,10 @@ type voiceChannelJoinOp struct {
 
 // ChannelVoiceJoin joins the session user to a voice channel.
 //
-//    gID     : Guild ID of the channel to join.
-//    cID     : Channel ID of the channel to join.
-//    mute    : If true, you will be set to muted upon joining.
-//    deaf    : If true, you will be set to deafened upon joining.
+//	gID     : Guild ID of the channel to join.
+//	cID     : Channel ID of the channel to join.
+//	mute    : If true, you will be set to muted upon joining.
+//	deaf    : If true, you will be set to deafened upon joining.
 func (s *Session) ChannelVoiceJoin(gID, cID string, mute, deaf bool) (voice *VoiceConnection, err error) {
 
 	s.log(LogInformational, "called")
@@ -744,10 +730,10 @@ func (s *Session) ChannelVoiceJoin(gID, cID string, mute, deaf bool) (voice *Voi
 //
 // This should only be used when the VoiceServerUpdate will be intercepted and used elsewhere.
 //
-//    gID     : Guild ID of the channel to join.
-//    cID     : Channel ID of the channel to join, leave empty to disconnect.
-//    mute    : If true, you will be set to muted upon joining.
-//    deaf    : If true, you will be set to deafened upon joining.
+//	gID     : Guild ID of the channel to join.
+//	cID     : Channel ID of the channel to join, leave empty to disconnect.
+//	mute    : If true, you will be set to muted upon joining.
+//	deaf    : If true, you will be set to deafened upon joining.
 func (s *Session) ChannelVoiceJoinManual(gID, cID string, mute, deaf bool) (err error) {
 
 	s.log(LogInformational, "called")
@@ -780,11 +766,6 @@ func (s *Session) onVoiceStateUpdate(st *VoiceStateUpdate) {
 	voice, exists := s.VoiceConnections[st.GuildID]
 	s.RUnlock()
 	if !exists {
-		return
-	}
-
-	// We only care about events that are about us.
-	if s.State.User.ID != st.UserID {
 		return
 	}
 

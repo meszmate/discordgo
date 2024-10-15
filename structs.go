@@ -90,10 +90,6 @@ type Session struct {
 	// Stores a mapping of guild id's to VoiceConnections
 	VoiceConnections map[string]*VoiceConnection
 
-	// Managed state object, updated internally with events when
-	// StateEnabled is true.
-	State *State
-
 	// The http client used for REST requests
 	Client *http.Client
 
@@ -960,12 +956,21 @@ type GuildPreview struct {
 	Description string `json:"description"`
 }
 
+var DefaultGuildIcon = "https://cdn.discordapp.com/embed/avatars/0.png"
+
 // IconURL returns a URL to the guild's icon.
 //
 //	size:    The size of the desired icon image as a power of two
 //	         Image size can be any power of two between 16 and 4096.
 func (g *GuildPreview) IconURL(size string) string {
-	return iconURL(g.Icon, EndpointGuildIcon(g.ID, g.Icon), EndpointGuildIconAnimated(g.ID, g.Icon), size)
+	if g.Icon != "" {
+		return iconURL(g.Icon, EndpointGuildIcon(g.ID, g.Icon), EndpointGuildIconAnimated(g.ID, g.Icon), size)
+	}
+	URL := DefaultGuildIcon
+	if size != "" {
+		URL += "?size=" + size
+	}
+	return URL
 }
 
 // GuildScheduledEvent is a representation of a scheduled event in a guild. Only for retrieval of the data.
