@@ -960,11 +960,16 @@ var DefaultGuildIcon = "https://cdn.discordapp.com/embed/avatars/0.png"
 
 // IconURL returns a URL to the guild's icon.
 //
-//	size:    The size of the desired icon image as a power of two
-//	         Image size can be any power of two between 16 and 4096.
-func (g *GuildPreview) IconURL(size string) string {
+//		size:    The size of the desired icon image as a power of two
+//	          Image size can be any power of two between 16 and 4096.
+//
+//		def: Show the default icon url if the guild doesn't have icon.
+func (g *GuildPreview) IconURL(size string, def bool) string {
 	if g.Icon != "" {
 		return iconURL(g.Icon, EndpointGuildIcon(g.ID, g.Icon), EndpointGuildIconAnimated(g.ID, g.Icon), size)
+	}
+	if !def {
+		return ""
 	}
 	URL := DefaultGuildIcon
 	if size != "" {
